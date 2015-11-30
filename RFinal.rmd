@@ -1,0 +1,57 @@
+---
+title: "R Bridge Final Project"
+author: "Sam CD"
+date: "November 29, 2015"
+output: html_document
+---
+
+This projects uses the **Hflights** package by Hadley Wickham, available at:
+<https://cran.r-project.org/web/packages/hflights/hflights.pdf>.
+ or by running
+
+```{r,echo=TRUE}
+install.packages("hflights")
+library("hflights")
+```
+
+I wanted to compare two variables, Distance and Arrival Time, so I took only those two columns:
+
+```{r, echo=TRUE}
+dist_delay <- hflights[c("Distance","ArrDelay")]
+```
+
+Specifically, I wanted to divide into flights that arrive early, late or on-time:
+```{r,echo=TRUE}
+late <- subset(dist_delay,ArrDelay > 0)
+early <- subset(dist_delay,ArrDelay < 0)
+onTime <- subset(dist_delay,ArrDelay = 0)
+```
+
+to answer the question "Is a long-distance flight likely to cause a delay?"
+
+A correlation matrix appears to show a very slight negative correlation
+```{r,echo=FALSE}
+cor(dist_delay,use = "complete.obs")
+```
+
+The density plots for all three scenarios appear very similar
+```{r,echo=FALSE}
+plot(density(late$Distance))
+plot(density(early$Distance))
+plot(density(onTime$Distance))
+```
+
+and the mean and median distances of each subset are very close
+```{r,echo=FALSE}
+summary(dist_delay)
+summary(late)
+summary(early)
+summary(onTime)
+```
+
+but a Two Sample t-test does show a steady difference in means
+```{r,echo=FALSE}
+t.test(early,late)
+```
+
+all leading me to the conclusion that, while there is a slight negative correlation between the two, meaning a longer distance would cause a greater delay, there does not seem to be any other supporting statistics or graphics to be able to draw this conclusion.
